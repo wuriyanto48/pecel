@@ -48,6 +48,7 @@ int write_text(int sock_fd, const char* msg);
 
 void* handle_client(void* args);
 
+// global var
 extern struct server* srv;
 
 extern volatile sig_atomic_t server_stop;

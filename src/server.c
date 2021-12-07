@@ -1,21 +1,3 @@
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#include <signal.h>
-
-// socket headers
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netdb.h>
-#include <arpa/inet.h>
-#include <netinet/in.h>
-
-// close()
-#include <unistd.h>
-
-// thread
-#include <pthread.h>
-
 #include "type.h"
 #include "server.h"
 
