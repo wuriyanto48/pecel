@@ -15,10 +15,13 @@ MESSAGE( [Main] " CMAKE_CURRENT_BINARY_DIR = ${CMAKE_CURRENT_BINARY_DIR}")
 set(HEADER_FILES
     src/server.h
     src/type.h
+    src/config.h
+    src/database.h
 )
 
 set(SOURCE_FILES 
     src/server.c
+    src/config.c
 )
 
 # Add definition for library
