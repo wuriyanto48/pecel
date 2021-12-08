@@ -64,6 +64,12 @@ struct server* init_server(char* host, unsigned short port,
         }
 
         printf("addr_count: %d\n", addr_count);
+        // address not available
+        if (addr_count < 0) {
+            freeaddrinfo(serviceinfo);
+            free(s);
+            return NULL;
+        }
         
         // debug end
 
