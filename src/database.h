@@ -74,6 +74,9 @@ struct element* element_get(const char* key)
 
 struct element* element_insert(const char* key, const char* val)
 {
+    if (db->size >= HASH_SIZE)
+        return NULL;
+        
     struct element* res;
     unsigned int hashval;
 
