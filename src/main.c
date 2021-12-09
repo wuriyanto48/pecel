@@ -5,20 +5,27 @@
 
 #include "type.h"
 #include "server.h"
+#include "config.h"
 
 void graceful_handler(int sig);
 
 int main(int argc, char** argv) {
-    // if (argc < 2)
-    //     EXIT_ERR(1, "require url or hostname");
+    if (argc < 2)
+        EXIT_ERR(1, "require config file");
+    
+    char* conf_file = argv[1];
+    struct config conf;
+    int load_conf_r = load_conf(conf_file, &conf);
+    if (load_conf < 0)
+        EXIT_ERR(1, "error load config file");
 
     // signal
     signal(SIGTERM, graceful_handler);
     signal(SIGINT, graceful_handler);
 
     printf("start server\n");
-    char* host = "127.0.0.1";
-    unsigned short port = 6009;
+    char* host = conf.host;
+    unsigned short port = conf.port;
 
     srv = init_server(host, port, AF_INET, SOCK_STREAM, 5);
     if (srv == NULL)

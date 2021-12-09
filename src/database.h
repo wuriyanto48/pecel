@@ -7,22 +7,44 @@
 
 #define HASH_SIZE 1000
 
+int init_database();
+void destroy_database();
+unsigned int element_hash(const char* key);
+char* element_dup(const char* s);
+struct element* element_insert(const char* key, const char* val);
+void element_delete(const char* key);
+char* element_dup(const char* s);
+size_t element_size();
+void destroy_element(struct element* d);
+
 struct database {
-    struct database* next;
+    size_t size;
+    struct element* element_table[HASH_SIZE];
+};
+
+struct element {
+    struct element* next;
     char* key;
     char* val;
 };
 
-char* database_dup(const char* s);
-void destroy_database(struct database* d);
-unsigned int database_hash(const char* key);
-struct database* database_get(const char* key);
-struct database* database_insert(const char* key, const char* val);
-void database_delete(const char* key);
+static struct database* db;
 
-static struct database* database_table[HASH_SIZE];
+int init_database() 
+{
+    db = (struct database*) malloc(sizeof(*db));
+    if (db == NULL)
+        return -1;
+    return 0;
+}
 
-void destroy_database(struct database* d)
+void destroy_database()
+{
+    if (db != NULL)
+        free((void*) db);
+}
+
+void destroy_element(struct element* d)
 {
     if (d != NULL)
     {
@@ -31,7 +53,7 @@ void destroy_database(struct database* d)
     }
 }
 
-unsigned int database_hash(const char* key) 
+unsigned int element_hash(const char* key) 
 {
     unsigned int hashval;
     for (hashval = 0; *key != '\0'; key++)
@@ -39,10 +61,10 @@ unsigned int database_hash(const char* key)
     return (hashval % HASH_SIZE);
 }
 
-struct database* database_get(const char* key)
+struct element* element_get(const char* key)
 {
-    struct database* data;
-    for (data = database_table[database_hash(key)]; data != NULL; data = data->next) {
+    struct element* data;
+    for (data = db->element_table[element_hash(key)]; data != NULL; data = data->next) {
         printf("iter\n");
         if (strcmp(key, data->key) == 0)
             return data;
@@ -50,46 +72,51 @@ struct database* database_get(const char* key)
     return NULL;
 }
 
-struct database* database_insert(const char* key, const char* val)
+struct element* element_insert(const char* key, const char* val)
 {
-    struct database* res;
+    struct element* res;
     unsigned int hashval;
 
-    if ((res = database_get(key)) == NULL) { // not found
-        res = (struct database*) malloc(sizeof(*res));
-        if (res == NULL || (res->key = database_dup(key)) ==  NULL)
+    if ((res = element_get(key)) == NULL) { // not found
+        res = (struct element*) malloc(sizeof(*res));
+        if (res == NULL || (res->key = element_dup(key)) ==  NULL)
             return NULL;
-        hashval = database_hash(key);
-        res->next = database_table[hashval];
-        database_table[hashval] = res;
+        hashval = element_hash(key);
+        res->next = db->element_table[hashval];
+        db->element_table[hashval] = res;
     } else // key found
         free((void*) res->val);
     
-    if ((res->val = database_dup(val)) == NULL)
+    if ((res->val = element_dup(val)) == NULL)
         return NULL;
-    
+    db->size++;
     return res;
 }
 
-void database_delete(const char* key) 
+void element_delete(const char* key) 
 {
-    struct database* res;
+    struct element* res;
     unsigned int hashval;
 
-    if ((res = database_get(key)) != NULL) {
-        hashval = database_hash(key);
-        database_table[hashval] = NULL;
-        destroy_database(res);
+    if ((res = element_get(key)) != NULL) {
+        hashval = element_hash(key);
+        db->element_table[hashval] = NULL;
+        destroy_element(res);
+        db->size--;
     }
 }
 
-char* database_dup(const char* s)
+char* element_dup(const char* s)
 {
     char* res;
     res = (char*) malloc(strlen(s) + 1); // + 1 for NULL terminator '\0'
     if (res != NULL)
         strcpy(res, s);
     return res;
+}
+
+size_t element_size() {
+    return db->size;
 }
     
 #endif
