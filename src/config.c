@@ -5,7 +5,7 @@
 #include "type.h"
 #include "config.h"
 
-int extract_line_size(FILE* f) {
+static int extract_line_size(FILE* f) {
     int line_size = 0;
     char* line = NULL;
     size_t len = 0;
@@ -18,13 +18,13 @@ int extract_line_size(FILE* f) {
     return line_size;
 }
 
-void remove_linefeed(char* line) {
+static void remove_linefeed(char* line) {
     size_t len = strlen(line);
     if (len > 0 && line[len - 1] == 0xA)
         line[len-1] = 0;
 }
 
-char** extract_conf_val(char* line) {
+static char** extract_conf_val(char* line) {
     remove_linefeed(line);
 
     char** out = (char**) malloc(2 * sizeof(char*));
