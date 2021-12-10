@@ -136,6 +136,11 @@ void accept_server(struct server* s)
 
         //handle client
         struct client* c = init_client(new_client_fd, (struct sockaddr*) &client_addr);
+        if (c == NULL) {
+            printf("error initialize new client\n");
+            break;
+        }
+
 
         pthread_t conn_thread;
         pthread_create(&conn_thread, NULL, handle_client, (void*) c);
