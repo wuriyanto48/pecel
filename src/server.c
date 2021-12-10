@@ -143,7 +143,7 @@ void accept_server(struct server* s)
 
 
         pthread_t conn_thread;
-        pthread_create(&conn_thread, NULL, handle_client, (void*) c);
+        pthread_create(&conn_thread, NULL, client_handler, (void*) c);
     }
 }
 
@@ -174,7 +174,7 @@ void destroy_client(struct client* c)
         free(c);
 }
 
-void* handle_client(void* args) 
+void* client_handler(void* args) 
 {
     // cast to client*
     struct client* c = (struct client*) args;

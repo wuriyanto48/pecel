@@ -48,7 +48,7 @@ void destroy_client(struct client* c);
 
 int write_text(int sock_fd, const char* msg);
 
-void* handle_client(void* args);
+void* client_handler(void* args);
 
 // global var
 extern struct server* srv;

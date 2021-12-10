@@ -63,6 +63,12 @@ int main(int argc, char** argv)
     // start to accepting client
     (void) accept_server(srv);
 
+    // accept_server() stopped or returned errors
+    // handle resources
+    destroy_server(srv);
+    destroy_database();
+    destroy_cmd();
+
     return 0;
 }
 
