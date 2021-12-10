@@ -26,9 +26,17 @@ void remove_linefeed(char* line)
         line[len-1] = 0;
 }
 
+void remove_carriage_ret(char* line)
+{
+    size_t len = strlen(line);
+    if (len > 0 && line[len - 1] == 0xD)
+        line[len-1] = 0;
+}
+
 int extract_line_val(char* line, char* delim, char** out) 
 {
     remove_linefeed(line);
+    remove_carriage_ret(line);
 
     char* conf_token = strtok(line, delim);
     int index;

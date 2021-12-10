@@ -198,11 +198,6 @@ void* client_handler(void* args)
         buffer[bytes_recv_len] = '\0';
         if (bytes_recv_len == 0)
             break;
-
-        if (strcmp("exit\n", to_lower(buffer)) == 0) {
-            write_text(c->sock_fd, REPLY_EXIT);
-            break;
-        }
         
         if (bytes_recv_len > 0) {
             char** buffer_arr = (char**) malloc(3 * sizeof(char*));
@@ -213,7 +208,12 @@ void* client_handler(void* args)
 
             extract_line_val(buffer, " ", buffer_arr);
 
-            printf("bytes_recv_len : %lu\nbuffer: %s\n", sizeof(*buffer_arr), buffer);
+            if (strcmp("exit", to_lower(buffer_arr[0])) == 0) {
+                write_text(c->sock_fd, REPLY_EXIT);
+                break;
+            }
+            
+            printf("bytes_recv_len : %lu\nbuffer: %s\n", bytes_recv_len, buffer);
 
             // database operation
             // TODO: 
@@ -230,6 +230,7 @@ void* client_handler(void* args)
                 case SET: {
                     char* key = buffer_arr[1];
                     char* val = buffer_arr[2];
+
                     if (element_insert(key, val) == NULL) {
                         write_text(c->sock_fd, REPLY_ERROR);
                     } else {
@@ -277,7 +278,15 @@ void* client_handler(void* args)
 int write_text(int sock_fd, const char* msg) 
 {
     int text_len = strlen(msg);
-    send(sock_fd, msg, text_len, 0);
-    send(sock_fd, "\n", 1, 0);
+    int msg_len = text_len + 2;
+    char message[msg_len];
+
+    for (int i = 0; i < text_len; i++)
+        message[i] = msg[i];
+
+    message[text_len] = 0xD;
+    message[text_len+1] = 0xA;
+
+    send(sock_fd, message, msg_len, 0);
     return 0;
 }
