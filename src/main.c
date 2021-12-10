@@ -66,7 +66,8 @@ int main(int argc, char** argv)
     return 0;
 }
 
-void graceful_handler(int sig) {
+void graceful_handler(int sig) 
+{
     printf("graceful_handler | received signal: %d\n", sig);
     server_stop = TRUE;
     destroy_server(srv);
