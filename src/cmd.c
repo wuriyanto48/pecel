@@ -66,7 +66,8 @@ int init_cmd()
     return 0;
 }
 
-void destroy_cmd() {
+void destroy_cmd() 
+{
     for (int i = 0; i < CMD_SIZE; i++) {
         struct command_s* c = COMMANDS[i];
         if (c != NULL)

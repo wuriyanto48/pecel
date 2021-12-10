@@ -16,7 +16,8 @@ static const char* REPLY_INVALID = "INVALID*";
 static const char* REPLY_NOT_FOUND = "NOT_FOUND*";
 
 struct server* init_server(char* host, unsigned short port, 
-    unsigned int s_family, unsigned int s_type, unsigned int max_con_queue) {
+    unsigned int s_family, unsigned int s_type, unsigned int max_con_queue) 
+{
     struct server* s = (struct server*) malloc(sizeof(*s));
     if (s != NULL) {
         s->s_family = AF_UNSPEC;
@@ -105,7 +106,8 @@ struct server* init_server(char* host, unsigned short port,
     return s;
 }
 
-int listen_server(struct server* s) {
+int listen_server(struct server* s) 
+{
     int listen_r = listen(s->server_fd, s->max_conn_queue);
     if (listen_r == -1)
         return -1;
@@ -113,7 +115,8 @@ int listen_server(struct server* s) {
     return 0;
 }
 
-void accept_server(struct server* s) {
+void accept_server(struct server* s) 
+{
     while (TRUE) {
         if (server_stop)
             break;
@@ -139,7 +142,8 @@ void accept_server(struct server* s) {
     }
 }
 
-void destroy_server(struct server* s) {
+void destroy_server(struct server* s) 
+{
     if (s != NULL) {
         free(s);
         close(s->server_fd);
@@ -148,7 +152,8 @@ void destroy_server(struct server* s) {
 }
 
 
-struct client* init_client(unsigned int sock_fd, struct sockaddr* sock_client) {
+struct client* init_client(unsigned int sock_fd, struct sockaddr* sock_client) 
+{
     struct client* c = (struct client*) malloc(sizeof(*c));
     if (c != NULL) {
         c->sock_fd = sock_fd;
@@ -158,12 +163,14 @@ struct client* init_client(unsigned int sock_fd, struct sockaddr* sock_client) {
     return c;
 }
 
-void destroy_client(struct client* c) {
+void destroy_client(struct client* c) 
+{
     if (c != NULL)
         free(c);
 }
 
-void* handle_client(void* args) {
+void* handle_client(void* args) 
+{
     // cast to client*
     struct client* c = (struct client*) args;
 
@@ -262,7 +269,8 @@ void* handle_client(void* args) {
     return 0;
 }
 
-int write_text(int sock_fd, const char* msg) {
+int write_text(int sock_fd, const char* msg) 
+{
     int text_len = strlen(msg);
     send(sock_fd, msg, text_len, 0);
     send(sock_fd, "\n", 1, 0);

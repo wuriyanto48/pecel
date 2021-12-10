@@ -5,7 +5,8 @@
 #include "type.h"
 #include "pecel_utils.h"
 
-int extract_line_size(FILE* f) {
+int extract_line_size(FILE* f) 
+{
     int line_size = 0;
     char* line = NULL;
     size_t len = 0;
@@ -18,13 +19,15 @@ int extract_line_size(FILE* f) {
     return line_size;
 }
 
-void remove_linefeed(char* line) {
+void remove_linefeed(char* line) 
+{
     size_t len = strlen(line);
     if (len > 0 && line[len - 1] == 0xA)
         line[len-1] = 0;
 }
 
-int extract_line_val(char* line, char* delim, char** out) {
+int extract_line_val(char* line, char* delim, char** out) 
+{
     remove_linefeed(line);
 
     char* conf_token = strtok(line, delim);

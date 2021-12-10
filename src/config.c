@@ -6,7 +6,8 @@
 #include "config.h"
 #include "pecel_utils.h"
 
-int load_conf(const char* conf_file, struct config* conf) {
+int load_conf(const char* conf_file, struct config* conf) 
+{
     FILE* f = fopen(conf_file, "r");
     if (f == NULL)
         return -1;
