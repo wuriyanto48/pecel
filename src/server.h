@@ -19,6 +19,8 @@
 // thread
 #include <pthread.h>
 
+#include "pecel_utils.h"
+
 struct server {
     struct addrinfo *serviceinfo;
     unsigned int server_fd;
@@ -52,4 +54,5 @@ void* handle_client(void* args);
 extern struct server* srv;
 
 extern volatile sig_atomic_t server_stop;
+
 #endif

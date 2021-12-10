@@ -12,6 +12,7 @@ void destroy_database();
 unsigned int element_hash(const char* key);
 char* element_dup(const char* s);
 struct element* element_insert(const char* key, const char* val);
+struct element* element_get(const char* key);
 void element_delete(const char* key);
 char* element_dup(const char* s);
 size_t element_size();
@@ -27,5 +28,5 @@ struct element {
     char* key;
     char* val;
 };
-    
+
 #endif

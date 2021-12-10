@@ -6,6 +6,8 @@
 #include "type.h"
 #include "server.h"
 #include "config.h"
+#include "database.h"
+#include "cmd.h"
 
 void graceful_handler(int sig);
 
@@ -27,14 +29,33 @@ int main(int argc, char** argv) {
     char* host = conf.host;
     unsigned short port = conf.port;
 
+    // init server
     srv = init_server(host, port, AF_INET, SOCK_STREAM, 5);
     if (srv == NULL)
         EXIT_ERR(-1, "init server error");
+
+    // init database
+    int init_db_r = init_database();
+    if (init_db_r < 0)
+    {
+        destroy_server(srv);
+        EXIT_ERR(-1, "init database error");
+    }
+
+    // init command
+    int init_cmd_r = init_cmd();
+    if (init_cmd_r < 0) {
+        destroy_server(srv);
+        destroy_database();
+        EXIT_ERR(-1, "init cmd error");
+    }
 
     // start to listen
     int listen_r = listen_server(srv);
     if (listen_r == -1) {
         destroy_server(srv);
+        destroy_database();
+        destroy_cmd();
         EXIT_ERR(-1, "start to listen error");
     }
 
@@ -48,6 +69,8 @@ void graceful_handler(int sig) {
     printf("graceful_handler | received signal: %d\n", sig);
     server_stop = TRUE;
     destroy_server(srv);
+    destroy_database();
+    destroy_cmd();
 
     printf("shutdown server...\n");
     exit(1);

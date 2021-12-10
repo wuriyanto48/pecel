@@ -37,7 +37,6 @@ struct element* element_get(const char* key)
 {
     struct element* data;
     for (data = DATABASE->element_table[element_hash(key)]; data != NULL; data = data->next) {
-        printf("iter\n");
         if (strcmp(key, data->key) == 0)
             return data;
     }

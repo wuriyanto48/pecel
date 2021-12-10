@@ -31,7 +31,6 @@ int extract_line_val(char* line, char* delim, char** out) {
     int index;
     while (conf_token != NULL) {
         out[index] = conf_token;
-        printf("- %s | - %lu\n", conf_token, strlen(conf_token));
         conf_token = strtok(NULL, delim);
         index++;
     }

@@ -1,5 +1,8 @@
 #include "type.h"
 #include "server.h"
+#include "pecel_utils.h"
+#include "database.h"
+#include "cmd.h"
 
 volatile sig_atomic_t server_stop = FALSE;
 struct server* srv;
@@ -8,6 +11,9 @@ struct server* srv;
 static const char* REPLY_CONNECTED = "CONNECTED*";
 static const char* REPLY_OK = "OK*";
 static const char* REPLY_EXIT = "BYE*";
+static const char* REPLY_ERROR = "ERROR*";
+static const char* REPLY_INVALID = "INVALID*";
+static const char* REPLY_NOT_FOUND = "NOT_FOUND*";
 
 struct server* init_server(char* host, unsigned short port, 
     unsigned int s_family, unsigned int s_type, unsigned int max_con_queue) {
@@ -181,15 +187,68 @@ void* handle_client(void* args) {
         if (bytes_recv_len == 0)
             break;
 
-        if (strcmp("exit\n", buffer) == 0) {
+        if (strcmp("exit\n", buffer) == 0 || strcmp("EXIT\n", buffer) == 0) {
             write_text(c->sock_fd, REPLY_EXIT);
             break;
         }
         
         if (bytes_recv_len > 0) {
+            char** buffer_arr = (char**) malloc(3 * sizeof(char*));
+            if (buffer_arr == NULL) {
+                write_text(c->sock_fd, REPLY_ERROR);
+                break;
+            }
+
+            extract_line_val(buffer, " ", buffer_arr);
+
+            printf("bytes_recv_len : %lu\nbuffer: %s\n", sizeof(*buffer_arr), buffer);
+
+            // database operation
+            // TODO: 
+            // - move to new function
+            // - add validation
+
+            struct command_s* cmd_s = cmd_get(buffer_arr[0]);
             
-            printf("bytes_recv_len : %zd\nbuffer: %s\n", bytes_recv_len, buffer);
-            write_text(c->sock_fd, REPLY_OK);
+            if (cmd_s == NULL) {
+                write_text(c->sock_fd, REPLY_ERROR);
+            } else {
+
+                switch (cmd_s->c) {
+                case SET: {
+                    char* key = buffer_arr[1];
+                    char* val = buffer_arr[2];
+                    if (element_insert(key, val) == NULL) {
+                        write_text(c->sock_fd, REPLY_ERROR);
+                    } else {
+                        write_text(c->sock_fd, REPLY_OK);
+                    }
+                    break;
+                }
+                    
+                case GET: {
+                    char* key = buffer_arr[1];
+                    struct element* get_r = element_get(key);
+                    if (get_r == NULL) {
+                        write_text(c->sock_fd, REPLY_ERROR);
+                    } else {
+                        write_text(c->sock_fd, get_r->val);
+                    }
+                    break;
+                }
+                    
+
+                default: {
+                    write_text(c->sock_fd, REPLY_ERROR);
+                    break;
+                }
+                }
+
+                printf("cmd_s: %s | %d\n", cmd_s->c_s, cmd_s->c);
+                // write_text(c->sock_fd, REPLY_OK);
+            }
+
+            free((void*) buffer_arr);
         }
     }
 

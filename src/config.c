@@ -4,7 +4,7 @@
 
 #include "type.h"
 #include "config.h"
-#include "utils.h"
+#include "pecel_utils.h"
 
 int load_conf(const char* conf_file, struct config* conf) {
     FILE* f = fopen(conf_file, "r");
@@ -19,7 +19,8 @@ int load_conf(const char* conf_file, struct config* conf) {
 
     while(getline(&line, &len, f) != -1) {
         
-        char** out = extract_line_val(line, "= ");
+        char** out = (char**) malloc(2 * sizeof(char*));
+        extract_line_val(line, "= ", out);
 
         if (strcmp("host", out[0]) == 0)
             strcpy(conf->host, out[1]);
