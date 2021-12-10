@@ -1,5 +1,7 @@
 # Pecel
 
+[![Pecel CI](https://github.com/wuriyanto48/pecel/actions/workflows/ci.yml/badge.svg)](https://github.com/wuriyanto48/pecel/actions/workflows/ci.yml)
+
 An Experimental `Distributed Key Value Store` written in `C`
 
 ### Building
