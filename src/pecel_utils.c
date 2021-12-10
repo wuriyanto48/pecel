@@ -1,11 +1,9 @@
-#ifndef HEADER_UTILS_H
-#define HEADER_UTILS_H
-
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 
 #include "type.h"
+#include "pecel_utils.h"
 
 int extract_line_size(FILE* f) {
     int line_size = 0;
@@ -26,20 +24,17 @@ void remove_linefeed(char* line) {
         line[len-1] = 0;
 }
 
-char** extract_line_val(char* line, char* delim) {
+int extract_line_val(char* line, char* delim, char** out) {
     remove_linefeed(line);
 
-    char** out = (char**) malloc(2 * sizeof(char*));
     char* conf_token = strtok(line, delim);
     int index;
     while (conf_token != NULL) {
         out[index] = conf_token;
-        
+        printf("- %s | - %lu\n", conf_token, strlen(conf_token));
         conf_token = strtok(NULL, delim);
         index++;
     }
 
-    return out;
+    return 0;
 }
-
-#endif
