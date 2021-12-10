@@ -199,7 +199,7 @@ void* client_handler(void* args)
         if (bytes_recv_len == 0)
             break;
 
-        if (strcmp("exit\n", buffer) == 0 || strcmp("EXIT\n", buffer) == 0) {
+        if (strcmp("exit\n", to_lower(buffer)) == 0) {
             write_text(c->sock_fd, REPLY_EXIT);
             break;
         }

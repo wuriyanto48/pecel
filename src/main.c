@@ -21,6 +21,11 @@ int main(int argc, char** argv)
     int load_conf_r = load_conf(conf_file, &conf);
     if (load_conf < 0)
         EXIT_ERR(1, "error load config file");
+    
+    printf("host: %lu | %s\n", strlen(conf.host), conf.host);
+    printf("port: %d\n", conf.port);
+    printf("auth: %d\n", conf.auth);
+    printf("pass: %lu | %s\n", strlen(conf.pass), conf.pass);
 
     // signal
     signal(SIGTERM, graceful_handler);

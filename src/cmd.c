@@ -4,6 +4,7 @@
 
 #include "type.h"
 #include "cmd.h"
+#include "pecel_utils.h"
 
 static struct command_s* COMMANDS[CMD_SIZE];
 
@@ -24,7 +25,7 @@ unsigned int command_hash(const char* cmd_key)
     return (hashval % CMD_SIZE);
 }
 
-static struct command_s* cmd_insert(const char* c_key, enum command val)
+static struct command_s* cmd_insert(char* c_key, enum command val)
 {
         
     struct command_s* res;
@@ -43,13 +44,23 @@ static struct command_s* cmd_insert(const char* c_key, enum command val)
     return res;
 }
 
-struct command_s* cmd_get(const char* c_key)
+struct command_s* cmd_get(char* c_key)
 {
+    char* key = (char*) malloc(strlen(c_key) + 1);
+    if (key == NULL)
+        return NULL;
+    strcpy(key, c_key);
+    key = to_upper(key);
+    
     struct command_s* data;
-    for (data = COMMANDS[command_hash(c_key)]; data != NULL; data = data->next) {
-        if (strcmp(c_key, data->c_s) == 0)
+    for (data = COMMANDS[command_hash(key)]; data != NULL; data = data->next) {
+        if (strcmp(key, data->c_s) == 0) {
+            free((void*) key);
             return data;
+        }
     }
+
+    free((void*) key);
     return NULL;
 }
 

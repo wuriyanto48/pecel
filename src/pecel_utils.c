@@ -40,3 +40,15 @@ int extract_line_val(char* line, char* delim, char** out)
 
     return 0;
 }
+
+char* to_lower(char* s)
+{
+    for(char* p=s; *p; p++) *p=tolower(*p);
+    return s;
+}
+
+char* to_upper(char* s)
+{
+    for(char* p=s; *p; p++) *p=toupper(*p);
+    return s;
+}

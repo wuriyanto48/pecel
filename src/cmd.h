@@ -29,6 +29,6 @@ struct command_s {
 
 int init_cmd();
 void destroy_cmd();
-struct command_s* cmd_get(const char* c_key);
+struct command_s* cmd_get(char* c_key);
 
 #endif
