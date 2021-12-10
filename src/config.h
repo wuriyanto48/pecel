@@ -12,6 +12,8 @@
 struct config {
     char host[16];
     unsigned short port;
+    unsigned short auth;
+    char pass[9]; 
 };
 
 int load_conf(const char* conf_file, struct config* conf);
