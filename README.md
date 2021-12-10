@@ -18,3 +18,7 @@ The build results will be in the `bin` folder
 ```shell
 $ ./bin/pecel pecel.conf 
 ```
+
+### TODO
+- add auth feature
+- more validation and error handling
