@@ -19,13 +19,14 @@ set(HEADER_FILES
     src/type.h
     src/config.h
     src/database.h
-    src/utils.h
+    src/pecel_utils.h
 )
 
 set(SOURCE_FILES 
     src/server.c
     src/config.c
     src/database.c
+    src/pecel_utils.c
 )
 
 # Add definition for library
