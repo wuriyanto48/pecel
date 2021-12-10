@@ -20,6 +20,7 @@ set(HEADER_FILES
     src/config.h
     src/database.h
     src/pecel_utils.h
+    src/cmd.h
 )
 
 set(SOURCE_FILES 
@@ -27,6 +28,7 @@ set(SOURCE_FILES
     src/config.c
     src/database.c
     src/pecel_utils.c
+    src/cmd.c
 )
 
 # Add definition for library
