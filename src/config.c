@@ -22,6 +22,9 @@ int load_conf(const char* conf_file, struct config* conf)
     while(getline(&line, &len, f) != -1) {
         
         char** out = (char**) malloc(2 * sizeof(char*));
+        if (out == NULL)
+            return -1;
+            
         extract_line_val(line, "= ", out);
 
         if (strcmp("host", out[0]) == 0)
