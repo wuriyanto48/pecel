@@ -176,15 +176,18 @@ void destroy_client(struct client* c)
 
 void* client_handler(void* args) 
 {
-    // cast to client*
-    struct client* c = (struct client*) args;
-
     // detach self
     pthread_detach(pthread_self());
 
+    // cast to client*
+    struct client* c = (struct client*) args;
+    char client_ipstr[INET6_ADDRSTRLEN];
+
+    inet_ntop(c->sock_client->sa_family, c->sock_client, 
+        client_ipstr, sizeof(client_ipstr));
     printf("--------------------\n");
-    printf("accepted new connection, fd: %d\nfamily: %d\nthread id: %d\n", 
-        c->sock_fd, c->sock_client->sa_family, (int) pthread_self());
+    printf("accepted new connection, client ip: %s\nfamily: %d\nthread id: %d\n", 
+        client_ipstr, c->sock_client->sa_family, (int) pthread_self());
     
     printf("--------------------\n");
 
@@ -265,7 +268,7 @@ void* client_handler(void* args)
         }
     }
 
-    printf("client %d exit its connection\n", c->sock_fd);
+    printf("client %s exit its connection\n", client_ipstr);
     close(c->sock_fd);
     destroy_client(c);
 
