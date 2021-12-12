@@ -21,14 +21,23 @@
 #include "pecel_utils.h"
 #include "cmd.h"
 #include "database.h"
+#include "config.h"
 
 struct client {
     unsigned int sock_fd;
     struct sockaddr* sock_client;
 };
 
+struct handler_arg {
+    struct client* cl;
+    struct config* conf;
+};
+
 struct client* init_client(unsigned int sock_fd, struct sockaddr* sock_client);
 void destroy_client(struct client* c);
+
+struct handler_arg* init_handler_arg(struct client* cl, struct config* conf);
+void destroy_handler_arg(struct handler_arg* h);
 
 int write_text(int sock_fd, const char* msg);
 

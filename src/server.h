@@ -22,19 +22,19 @@
 #include "type.h"
 #include "pecel_utils.h"
 #include "client.h"
+#include "config.h"
 
 struct server {
     struct addrinfo *serviceinfo;
     unsigned int server_fd;
     unsigned int s_family;
     unsigned int s_type;
-    char* host;
-    unsigned short port;
+    struct config* conf;
     unsigned int max_conn_queue;
 };
 
-struct server* init_server(char* host, unsigned short port, 
-    unsigned int s_family, unsigned int s_type, unsigned int max_con_queue);
+struct server* init_server(struct config* conf, unsigned int s_family, 
+    unsigned int s_type, unsigned int max_con_queue);
 
 int listen_server(struct server* s);
 void accept_server(struct server* s);

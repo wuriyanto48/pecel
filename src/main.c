@@ -36,7 +36,7 @@ int main(int argc, char** argv)
     unsigned short port = conf.port;
 
     // init server
-    srv = init_server(host, port, AF_INET, SOCK_STREAM, 5);
+    srv = init_server(&conf, AF_INET, SOCK_STREAM, 5);
     if (srv == NULL)
         EXIT_ERR(-1, "init server error");
 

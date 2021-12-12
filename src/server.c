@@ -4,15 +4,14 @@
 volatile sig_atomic_t server_stop = FALSE;
 struct server* srv;
 
-struct server* init_server(char* host, unsigned short port, 
-    unsigned int s_family, unsigned int s_type, unsigned int max_con_queue) 
+struct server* init_server(struct config* conf, unsigned int s_family, 
+    unsigned int s_type, unsigned int max_con_queue) 
 {
     struct server* s = (struct server*) malloc(sizeof(*s));
     if (s != NULL) {
         s->s_family = AF_UNSPEC;
         s->s_type = SOCK_STREAM;
-        s->host = host;
-        s->port = port;
+        s->conf = conf;
         s->max_conn_queue = max_con_queue;
 
         struct addrinfo hints;
@@ -24,11 +23,11 @@ struct server* init_server(char* host, unsigned short port,
         // hints.ai_flags = AI_PASSIVE; auto set to local ip
 
         char port_str[5];
-        sprintf(port_str, "%d", s->port);
+        sprintf(port_str, "%d", s->conf->port);
 
-        printf("server running on %s:%s\n", s->host, port_str);
+        printf("server running on %s:%s\n", s->conf->host, port_str);
 
-        if (getaddrinfo(s->host, port_str, &hints, &serviceinfo) != 0) {
+        if (getaddrinfo(s->conf->host, port_str, &hints, &serviceinfo) != 0) {
             free((void*) s);
             return NULL;
         }
@@ -130,9 +129,14 @@ void accept_server(struct server* s)
             break;
         }
 
+        struct handler_arg* ha = init_handler_arg(c, srv->conf);
+        if (ha == NULL) {
+            printf("error initialize client handler arg\n");
+            break;
+        }
 
         pthread_t conn_thread;
-        pthread_create(&conn_thread, NULL, client_handler, (void*) c);
+        pthread_create(&conn_thread, NULL, client_handler, (void*) ha);
     }
 }
 
