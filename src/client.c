@@ -37,9 +37,9 @@ static int check_is_authenticated(struct handler_arg* h)
 
 static int is_password_valid(struct handler_arg* h, char* pass)
 {
-    if (strcmp(h->conf->pass, pass) == 0)
-        return 0;
-    return -1;
+    if (strcmp(h->conf->pass, pass) != 0)
+        return -1;
+    return 0;
 }
 
 struct handler_arg* init_handler_arg(struct client* cl, struct config* conf)
