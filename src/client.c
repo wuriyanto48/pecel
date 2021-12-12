@@ -15,6 +15,7 @@ struct client* init_client(unsigned int sock_fd, struct sockaddr* sock_client)
     if (c != NULL) {
         c->sock_fd = sock_fd;
         c->sock_client = sock_client;
+        c->is_authenticated = 0;
     }
 
     return c;
@@ -24,6 +25,21 @@ void destroy_client(struct client* c)
 {
     if (c != NULL)
         free((void*) c);
+}
+
+static int check_is_authenticated(struct handler_arg* h)
+{
+    if (h->conf->auth)
+        if (!h->cl->is_authenticated)
+            return -1;
+    return 0;
+}
+
+static int is_password_valid(struct handler_arg* h, char* pass)
+{
+    if (strcmp(h->conf->pass, pass) == 0)
+        return 0;
+    return -1;
 }
 
 struct handler_arg* init_handler_arg(struct client* cl, struct config* conf)
@@ -102,25 +118,47 @@ void* client_handler(void* args)
 
                 switch (cmd_s->c) {
                 case SET: {
-                    char* key = buffer_arr[1];
-                    char* val = buffer_arr[2];
-
-                    if (element_insert(key, val) == NULL) {
-                        write_text(ha->cl->sock_fd, REPLY_ERROR);
+                    if (check_is_authenticated(ha) < 0) {
+                        write_text(ha->cl->sock_fd, REPLY_UNAUTHORIZED);
                     } else {
-                        write_text(ha->cl->sock_fd, REPLY_OK);
+                        char* key = buffer_arr[1];
+                        char* val = buffer_arr[2];
+
+                        if (element_insert(key, val) == NULL) {
+                            write_text(ha->cl->sock_fd, REPLY_ERROR);
+                        } else {
+                            write_text(ha->cl->sock_fd, REPLY_OK);
+                        }
                     }
+                    
                     break;
                 }
                     
                 case GET: {
-                    char* key = buffer_arr[1];
-                    struct element* get_r = element_get(key);
-                    if (get_r == NULL) {
-                        write_text(ha->cl->sock_fd, REPLY_NOT_FOUND);
+                    if (check_is_authenticated(ha) < 0) {
+                        write_text(ha->cl->sock_fd, REPLY_UNAUTHORIZED);
                     } else {
-                        write_text(ha->cl->sock_fd, get_r->val);
+                        char* key = buffer_arr[1];
+                        struct element* get_r = element_get(key);
+                        if (get_r == NULL) {
+                            write_text(ha->cl->sock_fd, REPLY_NOT_FOUND);
+                        } else {
+                            write_text(ha->cl->sock_fd, get_r->val);
+                        }
                     }
+                    
+                    break;
+                }
+
+                case ATH: {
+                    char* pass = buffer_arr[1];
+                    if (is_password_valid(ha, pass) < 0) {
+                        write_text(ha->cl->sock_fd, REPLY_UNAUTHORIZED);
+                    } else {
+                        ha->cl->is_authenticated = 1;
+                        write_text(ha->cl->sock_fd, REPLY_OK);
+                    }
+
                     break;
                 }
                     

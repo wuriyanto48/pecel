@@ -26,6 +26,7 @@
 struct client {
     unsigned int sock_fd;
     struct sockaddr* sock_client;
+    int is_authenticated;
 };
 
 struct handler_arg {
