@@ -16,6 +16,7 @@ MESSAGE( [Main] " ----- DEBUGGING ----- ")
 
 set(HEADER_FILES
     src/server.h
+    src/client.h
     src/type.h
     src/config.h
     src/database.h
@@ -25,6 +26,7 @@ set(HEADER_FILES
 
 set(SOURCE_FILES 
     src/server.c
+    src/client.c
     src/config.c
     src/database.c
     src/pecel_utils.c
