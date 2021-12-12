@@ -82,6 +82,6 @@ void destroy_cmd()
     for (int i = 0; i < CMD_SIZE; i++) {
         struct command_s* c = COMMANDS[i];
         if (c != NULL)
-            free(c);
+            free((void*) c);
     }
 }

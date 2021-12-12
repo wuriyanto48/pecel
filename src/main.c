@@ -42,8 +42,7 @@ int main(int argc, char** argv)
 
     // init database
     int init_db_r = init_database();
-    if (init_db_r < 0)
-    {
+    if (init_db_r < 0) {
         destroy_server(srv);
         EXIT_ERR(-1, "init database error");
     }

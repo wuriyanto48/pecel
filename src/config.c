@@ -24,7 +24,7 @@ int load_conf(const char* conf_file, struct config* conf)
         char** out = (char**) malloc(2 * sizeof(char*));
         if (out == NULL)
             return -1;
-            
+
         extract_line_val(line, "= ", out);
 
         if (strcmp("host", out[0]) == 0)
@@ -39,7 +39,7 @@ int load_conf(const char* conf_file, struct config* conf)
         if (strcmp("pass", out[0]) == 0)
             strcpy(conf->pass, out[1]);
 
-        free(out);
+        free((void*) out);
     }
 
     conf->port = atoi(port_str);
@@ -50,7 +50,7 @@ int load_conf(const char* conf_file, struct config* conf)
         conf->auth = 0;
 
     fclose(f);
-    free(line);
+    free((void*) line);
 
     return 0;
 }

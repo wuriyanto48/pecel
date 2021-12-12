@@ -40,7 +40,7 @@ struct server* init_server(char* host, unsigned short port,
         printf("server running on %s:%s\n", s->host, port_str);
 
         if (getaddrinfo(s->host, port_str, &hints, &serviceinfo) != 0) {
-            free(s);
+            free((void*) s);
             return NULL;
         }
 
@@ -74,7 +74,7 @@ struct server* init_server(char* host, unsigned short port,
         // address not available
         if (addr_count < 0) {
             freeaddrinfo(serviceinfo);
-            free(s);
+            free((void*) s);
             return NULL;
         }
         
@@ -84,7 +84,7 @@ struct server* init_server(char* host, unsigned short port,
             serviceinfo->ai_socktype, serviceinfo->ai_protocol);
         if (sock_fd == -1) {
             freeaddrinfo(serviceinfo);
-            free(s);
+            free((void*) s);
             return NULL;
         }
 
@@ -95,7 +95,7 @@ struct server* init_server(char* host, unsigned short port,
         if (bind_r == -1) {
             close(sock_fd);
             freeaddrinfo(serviceinfo);
-            free(s);
+            free((void*) s);
             return NULL;
         }
 
@@ -150,7 +150,7 @@ void accept_server(struct server* s)
 void destroy_server(struct server* s) 
 {
     if (s != NULL) {
-        free(s);
+        free((void*) s);
         close(s->server_fd);
         freeaddrinfo(s->serviceinfo);
     }
@@ -171,7 +171,7 @@ struct client* init_client(unsigned int sock_fd, struct sockaddr* sock_client)
 void destroy_client(struct client* c) 
 {
     if (c != NULL)
-        free(c);
+        free((void*) c);
 }
 
 void* client_handler(void* args) 
