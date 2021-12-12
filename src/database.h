@@ -7,15 +7,15 @@
 
 #define HASH_SIZE 1000
 
-int init_database();
-void destroy_database();
+int init_database(void);
+void destroy_database(void);
 unsigned int element_hash(const char* key);
 char* element_dup(const char* s);
 struct element* element_insert(const char* key, const char* val);
 struct element* element_get(const char* key);
 void element_delete(const char* key);
 char* element_dup(const char* s);
-size_t element_size();
+size_t element_size(void);
 void destroy_element(struct element* d);
 
 struct database {

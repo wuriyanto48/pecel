@@ -27,8 +27,8 @@ struct command_s {
     struct command_s* next;
 };
 
-int init_cmd();
-void destroy_cmd();
+int init_cmd(void);
+void destroy_cmd(void);
 struct command_s* cmd_get(char* c_key);
 
 #endif

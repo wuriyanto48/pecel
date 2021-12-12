@@ -64,7 +64,7 @@ struct command_s* cmd_get(char* c_key)
     return NULL;
 }
 
-int init_cmd() 
+int init_cmd(void) 
 {
     if(cmd_insert("SET", SET) == NULL)
         return -1;
@@ -77,7 +77,7 @@ int init_cmd()
     return 0;
 }
 
-void destroy_cmd() 
+void destroy_cmd(void) 
 {
     for (int i = 0; i < CMD_SIZE; i++) {
         struct command_s* c = COMMANDS[i];

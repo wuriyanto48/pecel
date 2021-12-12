@@ -2,7 +2,7 @@
 
 static struct database* DATABASE;
 
-int init_database() 
+int init_database(void) 
 {
     DATABASE = (struct database*) malloc(sizeof(*DATABASE));
     if (DATABASE == NULL)
@@ -10,7 +10,7 @@ int init_database()
     return 0;
 }
 
-void destroy_database()
+void destroy_database(void)
 {
     if (DATABASE != NULL)
         free((void*) DATABASE);
@@ -89,6 +89,6 @@ char* element_dup(const char* s)
     return res;
 }
 
-size_t element_size() {
+size_t element_size(void) {
     return DATABASE->size;
 }
