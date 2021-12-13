@@ -26,8 +26,18 @@ $ ./bin/pecel pecel.conf
 
 ### Connect to `pecel server` with `nc`
 
+Login to server with `ATH` command, for example your server password is `12345`.
 ```shell
 $ nc 127.0.0.1 6009
+$ CONNECTED*
+$ ATH 12345
+$ OK*
+```
+
+Set and Get value
+```shell
+$ nc 127.0.0.1 6009
+$ CONNECTED*
 $ SET 1 wury
 $ OK*
 $ GET 1
