@@ -11,6 +11,11 @@ def main():
     response_connected = client.recv(1024)
     print(response_connected)
 
+    # set auth
+    client.send('ATH 12345 wury\r\n'.encode())
+    response_auth = client.recv(1024)
+    print(response_auth)
+
     # set data
     client.send('SET 1 wury\r\n'.encode())
     response_set = client.recv(1024)
