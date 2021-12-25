@@ -1,14 +1,5 @@
 #include "client.h"
 
-// basic reply
-static const char* REPLY_CONNECTED = "CONNECTED*";
-static const char* REPLY_OK = "OK*";
-static const char* REPLY_EXIT = "BYE*";
-static const char* REPLY_ERROR = "ERROR*";
-static const char* REPLY_INVALID = "INVALID*";
-static const char* REPLY_NOT_FOUND = "NOT_FOUND*";
-static const char* REPLY_UNAUTHORIZED = "UNAUTHORIZED*";
-
 struct client* init_client(unsigned int sock_fd, struct sockaddr* sock_client) 
 {
     struct client* c = (struct client*) malloc(sizeof(*c));
@@ -85,11 +76,13 @@ void* client_handler(void* args)
     ssize_t bytes_recv_len;
     while (TRUE) {
         bytes_recv_len = recv(ha->cl->sock_fd, buffer, BUFFER_MSG_SIZE, 0);
+        
+        // add null terminator to buffer
         buffer[bytes_recv_len] = '\0';
         if (bytes_recv_len == 0)
             break;
         
-        if (bytes_recv_len > 0) {
+        if (bytes_recv_len > 1) {
             char** buffer_arr = (char**) malloc(3 * sizeof(char*));
             if (buffer_arr == NULL) {
                 write_text(ha->cl->sock_fd, REPLY_ERROR);
@@ -211,6 +204,8 @@ void* client_handler(void* args)
             }
 
             free((void*) buffer_arr);
+        } else {
+            write_text(ha->cl->sock_fd, REPLY_INVALID);
         }
     }
 
@@ -233,8 +228,8 @@ int write_text(int sock_fd, const char* msg)
     for (int i = 0; i < text_len; i++)
         message[i] = msg[i];
 
-    message[text_len] = 0xD;
-    message[text_len+1] = 0xA;
+    message[text_len] = CARRIAGE_RETURN;
+    message[text_len+1] = LINE_FEED;
 
     send(sock_fd, message, msg_len, 0);
     return 0;
