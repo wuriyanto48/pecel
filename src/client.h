@@ -22,6 +22,7 @@
 #include "cmd.h"
 #include "database.h"
 #include "config.h"
+#include "type.h"
 
 struct client {
     unsigned int sock_fd;

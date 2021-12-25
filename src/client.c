@@ -96,7 +96,8 @@ void* client_handler(void* args)
                 break;
             }
 
-            extract_line_val(buffer, " ", buffer_arr);
+            int index_size = 0;
+            extract_line_val(buffer, " ", buffer_arr, &index_size);
 
             if (strcmp("exit", to_lower(buffer_arr[0])) == 0) {
                 write_text(ha->cl->sock_fd, REPLY_EXIT);
@@ -104,6 +105,9 @@ void* client_handler(void* args)
             }
             
             printf("bytes_recv_len : %lu\nbuffer: %s\n", bytes_recv_len, buffer);
+            printf("-----------------\n");
+            printf("buffer_arr len: %d\n", index_size);
+            printf("-----------------\n");
 
             // database operation
             // TODO: 
@@ -121,13 +125,17 @@ void* client_handler(void* args)
                     if (check_is_authenticated(ha) < 0) {
                         write_text(ha->cl->sock_fd, REPLY_UNAUTHORIZED);
                     } else {
-                        char* key = buffer_arr[1];
-                        char* val = buffer_arr[2];
-
-                        if (element_insert(key, val) == NULL) {
-                            write_text(ha->cl->sock_fd, REPLY_ERROR);
+                        if (index_size < 3) {
+                            write_text(ha->cl->sock_fd, REPLY_INVALID);
                         } else {
-                            write_text(ha->cl->sock_fd, REPLY_OK);
+                            char* key = buffer_arr[1];
+                            char* val = buffer_arr[2];
+
+                            if (element_insert(key, val) == NULL) {
+                                write_text(ha->cl->sock_fd, REPLY_ERROR);
+                            } else {
+                                write_text(ha->cl->sock_fd, REPLY_OK);
+                            }
                         }
                     }
                     
@@ -138,12 +146,37 @@ void* client_handler(void* args)
                     if (check_is_authenticated(ha) < 0) {
                         write_text(ha->cl->sock_fd, REPLY_UNAUTHORIZED);
                     } else {
-                        char* key = buffer_arr[1];
-                        struct element* get_r = element_get(key);
-                        if (get_r == NULL) {
-                            write_text(ha->cl->sock_fd, REPLY_NOT_FOUND);
+                        if (index_size < 2) {
+                            write_text(ha->cl->sock_fd, REPLY_INVALID);
                         } else {
-                            write_text(ha->cl->sock_fd, get_r->val);
+                            char* key = buffer_arr[1];
+                            struct element* get_r = element_get(key);
+                            if (get_r == NULL) {
+                                write_text(ha->cl->sock_fd, REPLY_NOT_FOUND);
+                            } else {
+                                write_text(ha->cl->sock_fd, get_r->val);
+                            }
+                        }
+                    }
+                    
+                    break;
+                }
+
+                case REM: {
+                    if (check_is_authenticated(ha) < 0) {
+                        write_text(ha->cl->sock_fd, REPLY_UNAUTHORIZED);
+                    } else {
+                        if (index_size < 2) {
+                            write_text(ha->cl->sock_fd, REPLY_INVALID);
+                        } else {
+                            char* key = buffer_arr[1];
+                            struct element* get_r = element_get(key);
+                            if (get_r == NULL) {
+                                write_text(ha->cl->sock_fd, REPLY_NOT_FOUND);
+                            } else {
+                                element_delete(key);
+                                write_text(ha->cl->sock_fd, REPLY_OK);
+                            }
                         }
                     }
                     
@@ -151,12 +184,16 @@ void* client_handler(void* args)
                 }
 
                 case ATH: {
-                    char* pass = buffer_arr[1];
-                    if (is_password_valid(ha, pass) < 0) {
-                        write_text(ha->cl->sock_fd, REPLY_UNAUTHORIZED);
+                    if (index_size < 2) {
+                        write_text(ha->cl->sock_fd, REPLY_INVALID);
                     } else {
-                        ha->cl->is_authenticated = 1;
-                        write_text(ha->cl->sock_fd, REPLY_OK);
+                        char* pass = buffer_arr[1];
+                        if (is_password_valid(ha, pass) < 0) {
+                            write_text(ha->cl->sock_fd, REPLY_UNAUTHORIZED);
+                        } else {
+                            ha->cl->is_authenticated = 1;
+                            write_text(ha->cl->sock_fd, REPLY_OK);
+                        }
                     }
 
                     break;
