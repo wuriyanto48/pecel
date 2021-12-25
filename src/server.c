@@ -143,8 +143,8 @@ void accept_server(struct server* s)
 void destroy_server(struct server* s) 
 {
     if (s != NULL) {
-        free((void*) s);
         close(s->server_fd);
         freeaddrinfo(s->serviceinfo);
+        free((void*) s);
     }
 }
