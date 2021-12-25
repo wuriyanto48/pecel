@@ -33,7 +33,7 @@ void remove_carriage_ret(char* line)
         line[len-1] = 0;
 }
 
-int extract_line_val(char* line, char* delim, char** out) 
+int extract_line_val(char* line, char* delim, char** out, int* index_size) 
 {
     remove_linefeed(line);
     remove_carriage_ret(line);
@@ -45,6 +45,9 @@ int extract_line_val(char* line, char* delim, char** out)
         conf_token = strtok(NULL, delim);
         index++;
     }
+    
+    if (index_size != NULL)
+        *index_size = index;
 
     return 0;
 }
