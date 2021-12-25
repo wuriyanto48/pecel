@@ -14,8 +14,10 @@ struct client* init_client(unsigned int sock_fd, struct sockaddr* sock_client)
 
 void destroy_client(struct client* c) 
 {
-    if (c != NULL)
+    if (c != NULL) {
+        close(c->sock_fd);
         free((void*) c);
+    }
 }
 
 static int check_is_authenticated(struct handler_arg* h)
@@ -210,7 +212,6 @@ void* client_handler(void* args)
     }
 
     printf("client %s exit its connection\n", client_ipstr);
-    close(ha->cl->sock_fd);
     destroy_handler_arg(ha);
 
     // exit its thread
