@@ -45,5 +45,4 @@ $ wury
 ```
 
 ### TODO
-- add auth feature
 - more validation and error handling
