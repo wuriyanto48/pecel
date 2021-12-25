@@ -25,7 +25,7 @@ int load_conf(const char* conf_file, struct config* conf)
         if (out == NULL)
             return -1;
 
-        extract_line_val(line, "= ", out);
+        extract_line_val(line, "= ", out, NULL);
 
         if (strcmp("host", out[0]) == 0)
             strcpy(conf->host, out[1]);
