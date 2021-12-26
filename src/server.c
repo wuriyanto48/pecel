@@ -1,6 +1,5 @@
 #include "server.h"
 
-
 volatile sig_atomic_t server_stop = FALSE;
 struct server* srv;
 
