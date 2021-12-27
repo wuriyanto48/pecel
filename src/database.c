@@ -1,19 +1,37 @@
 #include "database.h"
 
-static struct database* DATABASE;
+static struct database_map* DATABASE_MAP;
 
-int init_database(void) 
+struct database* init_database(void) 
 {
-    DATABASE = (struct database*) malloc(sizeof(*DATABASE));
-    if (DATABASE == NULL)
+    struct database* database = (struct database*) malloc(sizeof(*database));
+    if (database == NULL)
+        return NULL;
+    database->db_set = element_insert;
+    database->db_get = element_get;
+    database->db_del = element_delete;
+    database->db_size = element_size;
+    return database;
+}
+
+void destroy_database(struct database* database)
+{
+    if (database != NULL)
+        free((void*) database);
+}
+
+int init_database_map(void) 
+{
+    DATABASE_MAP = (struct database_map*) malloc(sizeof(*DATABASE_MAP));
+    if (DATABASE_MAP == NULL)
         return -1;
     return 0;
 }
 
-void destroy_database(void)
+void destroy_database_map(void)
 {
-    if (DATABASE != NULL)
-        free((void*) DATABASE);
+    if (DATABASE_MAP != NULL)
+        free((void*) DATABASE_MAP);
 }
 
 void destroy_element(struct element* d)
@@ -36,7 +54,7 @@ unsigned int element_hash(const char* key)
 struct element* element_get(const char* key)
 {
     struct element* data;
-    for (data = DATABASE->element_table[element_hash(key)]; data != NULL; data = data->next) {
+    for (data = DATABASE_MAP->element_table[element_hash(key)]; data != NULL; data = data->next) {
         if (strcmp(key, data->key) == 0)
             return data;
     }
@@ -45,7 +63,7 @@ struct element* element_get(const char* key)
 
 struct element* element_insert(const char* key, const char* val)
 {
-    if (DATABASE->size >= HASH_SIZE)
+    if (DATABASE_MAP->size >= HASH_SIZE)
         return NULL;
         
     struct element* res;
@@ -56,14 +74,14 @@ struct element* element_insert(const char* key, const char* val)
         if (res == NULL || (res->key = element_dup(key)) ==  NULL)
             return NULL;
         hashval = element_hash(key);
-        res->next = DATABASE->element_table[hashval];
-        DATABASE->element_table[hashval] = res;
+        res->next = DATABASE_MAP->element_table[hashval];
+        DATABASE_MAP->element_table[hashval] = res;
     } else // key found
         free((void*) res->val);
     
     if ((res->val = element_dup(val)) == NULL)
         return NULL;
-    DATABASE->size++;
+    DATABASE_MAP->size++;
     return res;
 }
 
@@ -74,9 +92,9 @@ void element_delete(const char* key)
 
     if ((res = element_get(key)) != NULL) {
         hashval = element_hash(key);
-        DATABASE->element_table[hashval] = NULL;
+        DATABASE_MAP->element_table[hashval] = NULL;
         destroy_element(res);
-        DATABASE->size--;
+        DATABASE_MAP->size--;
     }
 }
 
@@ -90,5 +108,5 @@ char* element_dup(const char* s)
 }
 
 size_t element_size(void) {
-    return DATABASE->size;
+    return DATABASE_MAP->size;
 }

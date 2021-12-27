@@ -128,6 +128,9 @@ void accept_server(struct server* s)
             break;
         }
 
+        // set database to client
+        c->database = s->database;
+
         struct handler_arg* ha = init_handler_arg(c, srv->conf);
         if (ha == NULL) {
             printf("error initialize client handler arg\n");

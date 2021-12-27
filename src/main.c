@@ -11,6 +11,8 @@
 
 void graceful_handler(int sig);
 
+struct database* database;
+
 int main(int argc, char** argv) 
 {
     if (argc < 2)
@@ -41,17 +43,27 @@ int main(int argc, char** argv)
         EXIT_ERR(-1, "init server error");
 
     // init database
-    int init_db_r = init_database();
+    int init_db_r = init_database_map();
     if (init_db_r < 0) {
         destroy_server(srv);
+        EXIT_ERR(-1, "init database map error");
+    }
+
+    database = init_database();
+    if (database == NULL) {
+        destroy_server(srv);
+        destroy_database_map();
         EXIT_ERR(-1, "init database error");
     }
+
+    // set database to server
+    srv->database = database;
 
     // init command
     int init_cmd_r = init_cmd();
     if (init_cmd_r < 0) {
         destroy_server(srv);
-        destroy_database();
+        destroy_database_map();
         EXIT_ERR(-1, "init cmd error");
     }
 
@@ -59,7 +71,8 @@ int main(int argc, char** argv)
     int listen_r = listen_server(srv);
     if (listen_r == -1) {
         destroy_server(srv);
-        destroy_database();
+        destroy_database_map();
+        destroy_database(database);
         destroy_cmd();
         EXIT_ERR(-1, "start to listen error");
     }
@@ -70,7 +83,8 @@ int main(int argc, char** argv)
     // accept_server() stopped or returned errors
     // handle resources
     destroy_server(srv);
-    destroy_database();
+    destroy_database_map();
+    destroy_database(database);
     destroy_cmd();
 
     return 0;
@@ -81,7 +95,8 @@ void graceful_handler(int sig)
     printf("graceful_handler | received signal: %d\n", sig);
     server_stop = TRUE;
     destroy_server(srv);
-    destroy_database();
+    destroy_database_map();
+    destroy_database(database);
     destroy_cmd();
 
     printf("shutdown server...\n");

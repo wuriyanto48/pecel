@@ -126,7 +126,7 @@ void* client_handler(void* args)
                             char* key = buffer_arr[1];
                             char* val = buffer_arr[2];
 
-                            if (element_insert(key, val) == NULL) {
+                            if (ha->cl->database->db_set(key, val) == NULL) {
                                 write_text(ha->cl->sock_fd, REPLY_ERROR);
                             } else {
                                 write_text(ha->cl->sock_fd, REPLY_OK);
@@ -145,7 +145,7 @@ void* client_handler(void* args)
                             write_text(ha->cl->sock_fd, REPLY_INVALID);
                         } else {
                             char* key = buffer_arr[1];
-                            struct element* get_r = element_get(key);
+                            struct element* get_r = ha->cl->database->db_get(key);
                             if (get_r == NULL) {
                                 write_text(ha->cl->sock_fd, REPLY_NOT_FOUND);
                             } else {
@@ -165,11 +165,11 @@ void* client_handler(void* args)
                             write_text(ha->cl->sock_fd, REPLY_INVALID);
                         } else {
                             char* key = buffer_arr[1];
-                            struct element* get_r = element_get(key);
+                            struct element* get_r = ha->cl->database->db_get(key);
                             if (get_r == NULL) {
                                 write_text(ha->cl->sock_fd, REPLY_NOT_FOUND);
                             } else {
-                                element_delete(key);
+                                ha->cl->database->db_del(key);
                                 write_text(ha->cl->sock_fd, REPLY_OK);
                             }
                         }

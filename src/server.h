@@ -23,6 +23,7 @@
 #include "pecel_utils.h"
 #include "client.h"
 #include "config.h"
+#include "database.h"
 
 struct server {
     struct addrinfo *serviceinfo;
@@ -31,6 +32,7 @@ struct server {
     unsigned int s_type;
     struct config* conf;
     unsigned int max_conn_queue;
+    struct database* database;
 };
 
 struct server* init_server(struct config* conf, unsigned int s_family, 
