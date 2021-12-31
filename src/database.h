@@ -40,6 +40,8 @@ void element_delete(const char* key);
 char* element_dup(const char* s);
 size_t element_size(void);
 void destroy_element(struct element* d);
+void destroy_elements(void);
+
 
 struct database_map {
     size_t size;

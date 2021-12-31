@@ -30,8 +30,10 @@ int init_database_map(void)
 
 void destroy_database_map(void)
 {
-    if (DATABASE_MAP != NULL)
+    if (DATABASE_MAP != NULL) {
         free((void*) DATABASE_MAP);
+        destroy_elements();
+    }
 }
 
 void destroy_element(struct element* d)
@@ -41,6 +43,12 @@ void destroy_element(struct element* d)
         free((void*) d->key);
         free((void*) d->val);
     }
+}
+
+void destroy_elements(void)
+{
+    for (int i = 0; i < DATABASE_MAP->size; ++i)
+        destroy_element(DATABASE_MAP->element_table[i]);
 }
 
 unsigned int element_hash(const char* key) 
