@@ -226,8 +226,7 @@ int write_text(int sock_fd, const char* msg)
     int msg_len = text_len + 2;
     char message[msg_len];
 
-    for (int i = 0; i < text_len; i++)
-        message[i] = msg[i];
+    memcpy((void*) message, (void*) msg, text_len);
 
     message[text_len] = CARRIAGE_RETURN;
     message[text_len+1] = LINE_FEED;
