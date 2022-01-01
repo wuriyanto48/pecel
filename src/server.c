@@ -24,8 +24,6 @@ struct server* init_server(struct config* conf, unsigned int s_family,
         char port_str[5];
         sprintf(port_str, "%d", s->conf->port);
 
-        printf("server running on %s:%s\n", s->conf->host, port_str);
-
         if (getaddrinfo(s->conf->host, port_str, &hints, &serviceinfo) != 0) {
             free((void*) s);
             return NULL;
@@ -96,8 +94,14 @@ struct server* init_server(struct config* conf, unsigned int s_family,
 int listen_server(struct server* s) 
 {
     int listen_r = listen(s->server_fd, s->max_conn_queue);
-    if (listen_r == -1)
+    if (listen_r == -1) {
+        if (s->on_error_listen != NULL)
+            s->on_error_listen(ERROR_LISTEN);
         return -1;
+    }
+
+    if (s->on_success_listen != NULL)
+        s->on_success_listen(s->conf->host, s->conf->port);
 
     return 0;
 }
@@ -117,7 +121,8 @@ void accept_server(struct server* s)
             (struct sockaddr*) &client_addr, &client_addr_len);
 
         if (new_client_fd == -1) {
-            printf("error accept connection, returned fd: %d\n", new_client_fd);
+            if (s->on_error_accept != NULL)
+                s->on_error_accept(ERROR_ACCEPT);
             break;
         }
 

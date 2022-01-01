@@ -10,6 +10,8 @@
 #include "cmd.h"
 
 void graceful_handler(int sig);
+void on_listen_server(char* host, unsigned short port);
+void on_error_accept_server(int err);
 
 struct database* database;
 
@@ -41,6 +43,10 @@ int main(int argc, char** argv)
     srv = init_server(&conf, AF_INET, SOCK_STREAM, 5);
     if (srv == NULL)
         EXIT_ERR(-1, "init server error");
+    
+    // set server callback
+    srv->on_success_listen = on_listen_server;
+    srv->on_error_accept = on_error_accept_server;
 
     // init database
     int init_db_r = init_database_map();
@@ -101,4 +107,16 @@ void graceful_handler(int sig)
 
     printf("shutdown server...\n");
     exit(1);
+}
+
+void on_listen_server(char* host, unsigned short port)
+{
+    char port_str[5];
+    sprintf(port_str, "%d", port);
+    printf("server running on %s:%s\n", host, port_str);
+}
+
+void on_error_accept_server(int err)
+{
+    printf("error accept connection, returned fd: %d\n", err);
 }

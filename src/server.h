@@ -25,6 +25,13 @@
 #include "config.h"
 #include "database.h"
 
+#define ERROR_LISTEN -1
+#define ERROR_ACCEPT -2
+
+// server callback typedef
+typedef void (*on_success_cb) (char* host, unsigned short port);
+typedef void (*on_error_cb) (int err);
+
 struct server {
     struct addrinfo *serviceinfo;
     unsigned int server_fd;
@@ -33,6 +40,11 @@ struct server {
     struct config* conf;
     unsigned int max_conn_queue;
     struct database* database;
+
+    // server callback
+    on_success_cb on_success_listen;
+    on_error_cb on_error_listen;
+    on_error_cb on_error_accept;
 };
 
 struct server* init_server(struct config* conf, unsigned int s_family, 
