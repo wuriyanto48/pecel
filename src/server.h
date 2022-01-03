@@ -29,8 +29,8 @@
 #define ERROR_ACCEPT -2
 
 // server callback typedef
-typedef void (*on_success_cb) (char* host, unsigned short port);
-typedef void (*on_error_cb) (int err);
+typedef void (*on_success_cb) (char*, unsigned short);
+typedef void (*on_error_cb) (int);
 
 struct server {
     struct addrinfo *serviceinfo;

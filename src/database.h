@@ -14,9 +14,9 @@ struct element {
 };
 
 // db interface
-typedef struct element* (*database_set) (const char* key, const char* val);
-typedef struct element* (*database_get) (const char* key);
-typedef void (*database_delete) (const char* key);
+typedef struct element* (*database_set) (const char*, const char*);
+typedef struct element* (*database_get) (const char*);
+typedef void (*database_delete) (const char*);
 typedef size_t (*database_size) (void);
 
 struct database {
